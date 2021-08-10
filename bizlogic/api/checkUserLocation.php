@@ -9,12 +9,12 @@ class CheckLocation
 
         $center_lat = null;
         $center_lon = null;
-        $center_id = null;
-        $cernter_name=null;
+        $cernter_name = null;
+        $officer_mobile = null;
 
-        //Todo : get center_id using user_id from user_registration_table 
+        //Todo : get cernter_name using user_id from user_registration_table 
         $conn = Connection::getConnection();
-        $query = "SELECT `center_id` FROM `patients` WHERE id = '$patient_id'";
+        $query = "SELECT `center_name` FROM `patients` WHERE id = '$patient_id'";
         $result = mysqli_query($conn, $query);
 
 
@@ -24,13 +24,13 @@ class CheckLocation
 
             while ($users = mysqli_fetch_assoc($result)) {
                 $data[] = $users;
-                $center_id = $data[0]['center_id'];
+                $cernter_name = $data[0]['center_name'];
             }
         }
 
-        //TODO : get center location useing center_id
-        if (!is_null($center_id)) {
-            $query = "SELECT * FROM `quarantine_centres` WHERE center_id = '$center_id'";
+        //TODO : get center location useing cernter_name
+        if (!is_null($cernter_name)) {
+            $query = "SELECT * FROM `quarantine_centres` WHERE centre_location = '$cernter_name'";
             $result = mysqli_query($conn, $query);
 
             if ($result->num_rows > 0) {
@@ -40,7 +40,7 @@ class CheckLocation
                     $data[] = $users;
                     $center_lat = $data[0]['latitude'];
                     $center_lon = $data[0]['longitude'];
-                    $cernter_name = $data[0]['centre_location'];
+             
                 }
             }
         }
@@ -56,34 +56,75 @@ class CheckLocation
                 !UserRange::isUserinRange($longitude, $center_lon, $center_lon_max)
             ) {
 
-                //TODO get reciver details
-                $query = "SELECT * FROM `officers` WHERE centre = '$cernter_name'";
+
+                $query = "SELECT * FROM `sms_status` WHERE patient_id = '$patient_id'";
                 $result = mysqli_query($conn, $query);
 
                 if ($result->num_rows > 0) {
-                    $officer_data = array();
+                    $is_reset = array();
 
-                    while ($users = mysqli_fetch_assoc($result)) {
-                        $officer_data[] = $users;
+                    while ($sms_status = mysqli_fetch_assoc($result)) {
+                        $is_reset[] = $sms_status;
                     }
+                    if ($is_reset[0]['is_reset'] == "I") {
+                        //TODO get reciver details
+                        $query = "SELECT * FROM `officers` WHERE centre = '$cernter_name'";
+                        $result = mysqli_query($conn, $query);
+
+                        if ($result->num_rows > 0) {
+
+                            $officer_data = array();
+
+                            while ($users = mysqli_fetch_assoc($result)) {
+                                $officer_data[] = $users;
+                            }
+
+                            foreach ($officer_data as $officer) {
+
+                                $officer_mobile = $officer['mobile'];
+
+                                //TODO call sms api and send officer_mobile
+                                $get_data = CallApi::callSmsApi();
+                                // $response = json_decode($get_data, true);
 
 
-                    foreach($officer_data as $officer){
+                                if ($get_data=="OK") {
 
-                        echo "$officer[mobile]<br>";
-                        
-                        $get_data = CallApi::callSmsApi();
-                        print($get_data);
-                        $response = json_decode($get_data, true);
-                        echo "$response[title]<br>";
+                                    $query = "UPDATE sms_status SET is_reset = 'A' WHERE patient_id = '$patient_id'";
+                                    mysqli_query($conn, $query);
+                                }
+                            }
+                        }
                     }
+                } else {
 
+                    //TODO get reciver details
+                    $query = "SELECT * FROM `officers` WHERE centre = '$cernter_name'";
+                    $result = mysqli_query($conn, $query);
 
-                    //TODO call sms api
-                   
+                    if ($result->num_rows > 0) {
+
+                        $officer_data = array();
+
+                        while ($users = mysqli_fetch_assoc($result)) {
+                            $officer_data[] = $users;
+                        }
+
+                        foreach ($officer_data as $officer) {
+
+                            $officer_mobile = $officer['mobile'];
+
+                            //TODO call sms api and send officer_mobile
+                            $get_data = CallApi::callSmsApi();
+
+                            if ($get_data=="OK") {
+
+                                $query = "INSERT INTO sms_status (sms_status,patient_id,send_to,is_reset) VALUES ('send','$patient_id','$officer_mobile','A')";
+                                mysqli_query($conn, $query);
+                            }
+                        }
+                    }
                 }
-
-            
             }
         }
     }
