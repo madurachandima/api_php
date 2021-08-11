@@ -11,6 +11,7 @@ class CheckLocation
         $center_lon = null;
         $cernter_name = null;
         $officer_mobile = null;
+        $msg = null;
 
         //Todo : get cernter_name using user_id from user_registration_table 
         $conn = Connection::getConnection();
@@ -25,6 +26,7 @@ class CheckLocation
             while ($users = mysqli_fetch_assoc($result)) {
                 $data[] = $users;
                 $cernter_name = $data[0]['center_name'];
+                
             }
         }
 
@@ -40,11 +42,11 @@ class CheckLocation
                     $data[] = $users;
                     $center_lat = $data[0]['latitude'];
                     $center_lon = $data[0]['longitude'];
+                
              
                 }
             }
         }
-
 
         if (!is_null($center_lat) && !is_null($center_lon)) {
 
@@ -84,9 +86,8 @@ class CheckLocation
                                 $officer_mobile = $officer['mobile'];
 
                                 //TODO call sms api and send officer_mobile
-                                $get_data = CallApi::callSmsApi();
+                                $get_data = CallApi::callSmsApi($officer_mobile,$msg);
                                 // $response = json_decode($get_data, true);
-
 
                                 if ($get_data=="OK") {
 
@@ -115,7 +116,7 @@ class CheckLocation
                             $officer_mobile = $officer['mobile'];
 
                             //TODO call sms api and send officer_mobile
-                            $get_data = CallApi::callSmsApi();
+                            $get_data = CallApi::callSmsApi($officer_mobile,$msg);
 
                             if ($get_data=="OK") {
 
@@ -125,6 +126,8 @@ class CheckLocation
                         }
                     }
                 }
+            }else{
+                print("cccccccc");
             }
         }
     }

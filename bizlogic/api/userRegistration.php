@@ -11,16 +11,15 @@ class PostUser
     static  function saveUser($data)
     {
 
-
         $latitude = $data->latitude;
         $longitude = $data->longitude;
         $patient_id = $data->patient_id;
 
-
-        $query = "INSERT INTO map (latitude,longitude,patient_id) VALUES ('$data->latitude','$data->longitude','$data->patient_id')";
+        $query = "INSERT INTO user_location_history(latitude,longitude,patient_id) VALUES ('$data->latitude','$data->longitude','$data->patient_id')";
         $conn = Connection::getConnection();
 
         if (mysqli_query($conn, $query)) {
+           
             $response["status"] = 201;
             $response["message"] = "New record inserted id : " . mysqli_insert_id($conn);
             $response["data"] = "";

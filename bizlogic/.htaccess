@@ -1,5 +1,6 @@
 RewriteEngine On    # Turn on the rewriting engine
 
-RewriteRule ^register$ api.php [NC,L]
+RewriteRule ^sendLocation$ api.php [NC,L]
+RewriteRule ^sendPatientSms$ api.php [NC,L]
 
 

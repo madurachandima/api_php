@@ -2,17 +2,16 @@
 
 class CallApi{
 
-    static function callSmsApi(){
+    static function callSmsApi($officer_mobile,$msg){
 
-       $ID = "94766670970";
-       $PW ="8632";
-       $TO="0766670970";
-       $TEXT="ccdc";
+
+      print($msg);
+      print($officer_mobile);
 
        $user = "94766670970";
        $password = "8632";
-       $text = urlencode("This is an example message");
-       $to = "0766670970";
+       $text = urlencode($msg); //$msg
+       $to = $officer_mobile; //$officer_mobile
        
        $baseurl ="http://www.textit.biz/sendmsg";
        $url = "$baseurl/?id=$user&pw=$password&to=$to&text=$text";
