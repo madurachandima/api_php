@@ -17,6 +17,7 @@ class CheckLocation
         $conn = Connection::getConnection();
         $query = "SELECT `center_name` FROM `patients` WHERE id = '$patient_id'";
         $result = mysqli_query($conn, $query);
+        print($conn->error);
 
 
 
@@ -34,6 +35,7 @@ class CheckLocation
         if (!is_null($cernter_name)) {
             $query = "SELECT * FROM `quarantine_centres` WHERE centre_location = '$cernter_name'";
             $result = mysqli_query($conn, $query);
+            print($conn->error);
 
             if ($result->num_rows > 0) {
                 $data = array();
@@ -61,6 +63,7 @@ class CheckLocation
 
                 $query = "SELECT * FROM `sms_status` WHERE patient_id = '$patient_id'";
                 $result = mysqli_query($conn, $query);
+                print($conn->error);
 
                 if ($result->num_rows > 0) {
                     $is_reset = array();
@@ -72,6 +75,7 @@ class CheckLocation
                         //TODO get reciver details
                         $query = "SELECT * FROM `officers` WHERE centre = '$cernter_name'";
                         $result = mysqli_query($conn, $query);
+                        print($conn->error);
 
                         if ($result->num_rows > 0) {
 
@@ -93,6 +97,7 @@ class CheckLocation
 
                                     $query = "UPDATE sms_status SET is_reset = 'A' WHERE patient_id = '$patient_id'";
                                     mysqli_query($conn, $query);
+                                    print($conn->error);
                                 }
                             }
                         }
@@ -102,6 +107,7 @@ class CheckLocation
                     //TODO get reciver details
                     $query = "SELECT * FROM `officers` WHERE centre = '$cernter_name'";
                     $result = mysqli_query($conn, $query);
+                    print($conn->error);
 
                     if ($result->num_rows > 0) {
 
@@ -122,6 +128,7 @@ class CheckLocation
 
                                 $query = "INSERT INTO sms_status (sms_status,patient_id,send_to,is_reset) VALUES ('send','$patient_id','$officer_mobile','A')";
                                 mysqli_query($conn, $query);
+                                print($conn->error);
                             }
                         }
                     }

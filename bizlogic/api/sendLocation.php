@@ -17,7 +17,7 @@ class PostLocation
 
         $query = "INSERT INTO user_location_history(latitude,longitude,patient_id) VALUES ('$data->latitude','$data->longitude','$data->patient_id')";
         $conn = Connection::getConnection();
-
+        print($conn->error);
         if (mysqli_query($conn, $query)) {
            
             $response["status"] = 201;

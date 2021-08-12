@@ -14,6 +14,7 @@ class SendPatientSms
         $query = "SELECT `center_name` FROM `patients` WHERE id = '$patient_id'";
         $conn = Connection::getConnection();
         $result = mysqli_query($conn, $query);
+        print($conn->error);
 
         if ($result->num_rows > 0) {
             $data = array();
@@ -27,6 +28,7 @@ class SendPatientSms
         if(!is_null($cernter_name)){
             $query = "SELECT * FROM `officers` WHERE centre = '$cernter_name'";
             $result = mysqli_query($conn, $query);
+            print($conn->error);
 
             if ($result->num_rows > 0) {
 
