@@ -9,7 +9,7 @@ include('api/patientSms.php');
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 $request_url = $_SERVER['REQUEST_URI'];
 
-
+print($request_url);
 switch ($requestMethod) {
         case httpMethod::POST:
                 switch ($request_url) {
